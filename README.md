@@ -116,6 +116,4 @@ src/
 
 Contributions are welcome. Keep changes focused and update this README when you add features or storage keys.
 
-## License
 
-This project is provided as-is. Add a license if you plan to distribute.
