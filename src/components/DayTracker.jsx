@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fmtShort } from "../hooks/useCalendar";
 import { usePersistedDayTracker } from "../hooks/usePersistedDayTracker";
 import { useScrollReveal } from "../hooks/useScrollReveal";
@@ -18,13 +18,7 @@ import { usePersistedDayNote } from "../hooks/usePersistedDayNote";
  * @param {Function} onClose - Handler to return to month view
  */
 
-const DEFAULT_EVENTS = [
-  { id: "seed-1", start: 9, duration: 1.5, title: "Main Editorial Meeting", cat: "EDITORIAL", color: "#1D4ED8" },
-  { id: "seed-2", start: 11, duration: 1, title: "Social Media Review", cat: "SOCIAL", color: "#92400E" },
-  { id: "seed-3", start: 13, duration: 0.5, title: "Working Lunch", cat: "PERSONAL", color: "#059669" },
-  { id: "seed-4", start: 14, duration: 2, title: "Content Production Sprint", cat: "PRODUCTION", color: "#991B1B" },
-  { id: "seed-5", start: 17, duration: 1, title: "Weekly Podcast Recording", cat: "PRODUCTION", color: "#991B1B" },
-];
+const DEFAULT_EVENTS = [];
 
 const HOURS = Array.from({ length: 17 }, (_, i) => i + 6); // 6 AM to 10 PM
 
@@ -35,9 +29,14 @@ function formatHour(h) {
 }
 
 const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const START_HOUR = 6;
+const END_HOUR = 22;
+const ROW_HEIGHT = 52;
+const SNAP_MINUTES = 30;
 
 export default function DayTracker({ date, accent, onClose }) {
   const revealRef = useRef(null);
+  const timelineRef = useRef(null);
   const dayName = DAYS_OF_WEEK[date.getDay()];
   const dateStr = fmtShort(date);
   const { events, addEvent, updateEvent, removeEvent } = usePersistedDayTracker(
@@ -46,7 +45,15 @@ export default function DayTracker({ date, accent, onClose }) {
   );
   const dayNote = usePersistedDayNote(date);
 
+  const [now, setNow] = useState(() => new Date());
+  const [dragState, setDragState] = useState(null);
+
   useScrollReveal(revealRef);
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const [draft, setDraft] = useState({
     title: "",
@@ -64,6 +71,53 @@ export default function DayTracker({ date, accent, onClose }) {
   const formattedHours = Number.isInteger(totalHours)
     ? totalHours
     : totalHours.toFixed(1);
+
+  const isToday = date.toDateString() === now.toDateString();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const minutesFromStart = Math.max(0, Math.min((END_HOUR - START_HOUR + 1) * 60, nowMinutes - START_HOUR * 60));
+  const nowTop = (minutesFromStart / 60) * ROW_HEIGHT;
+
+  const getMinutesFromPosition = (clientY) => {
+    const rect = timelineRef.current?.getBoundingClientRect();
+    if (!rect) return 0;
+    const y = Math.max(0, Math.min(rect.height, clientY - rect.top));
+    const totalMinutes = (END_HOUR - START_HOUR + 1) * 60;
+    const rawMinutes = (y / rect.height) * totalMinutes;
+    const snapped = Math.round(rawMinutes / SNAP_MINUTES) * SNAP_MINUTES;
+    return Math.max(0, Math.min(totalMinutes, snapped));
+  };
+
+  useEffect(() => {
+    if (!dragState) return undefined;
+
+    const handleMove = (event) => {
+      setDragState((prev) => (prev ? { ...prev, currentY: event.clientY } : prev));
+    };
+    const handleUp = (event) => {
+      const endMinutes = getMinutesFromPosition(event.clientY);
+      const startMinutes = dragState.startMinutes;
+      const min = Math.min(startMinutes, endMinutes);
+      const max = Math.max(startMinutes, endMinutes || startMinutes + SNAP_MINUTES);
+      const duration = Math.max(SNAP_MINUTES, max - min);
+      const start = START_HOUR + min / 60;
+
+      addEvent({
+        title: "New entry",
+        cat: "GENERAL",
+        start,
+        duration: duration / 60,
+        color: accent,
+      });
+      setDragState(null);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+  }, [dragState, addEvent, accent]);
 
   const handleAdd = () => {
     if (!draft.title.trim()) return;
@@ -280,7 +334,39 @@ export default function DayTracker({ date, accent, onClose }) {
       </div>
 
       {/* Timeline */}
-      <div className="day-tracker-timeline reveal">
+      <div
+        className="day-tracker-timeline reveal"
+        ref={timelineRef}
+        onMouseDown={(event) => {
+          if (event.button !== 0) return;
+          const startMinutes = getMinutesFromPosition(event.clientY);
+          setDragState({ startMinutes, currentY: event.clientY });
+        }}
+      >
+        {isToday && (
+          <div className="day-tracker-now-line" style={{ top: `${nowTop}px`, borderColor: accent }}>
+            <span className="day-tracker-now-dot" style={{ background: accent }} />
+          </div>
+        )}
+        {dragState && timelineRef.current && (
+          (() => {
+            const currentMinutes = getMinutesFromPosition(dragState.currentY);
+            const min = Math.min(dragState.startMinutes, currentMinutes);
+            const max = Math.max(dragState.startMinutes, currentMinutes || dragState.startMinutes + SNAP_MINUTES);
+            const height = Math.max(SNAP_MINUTES, max - min);
+            return (
+              <div
+                className="day-tracker-ghost"
+                style={{
+                  top: `${(min / 60) * ROW_HEIGHT}px`,
+                  height: `${(height / 60) * ROW_HEIGHT}px`,
+                  borderColor: accent,
+                  background: accent + "1F",
+                }}
+              />
+            );
+          })()
+        )}
         {HOURS.map((hour) => {
           // Find events that start at this hour
           const eventsAtHour = events.filter((e) => Math.floor(e.start) === hour);
@@ -298,9 +384,15 @@ export default function DayTracker({ date, accent, onClose }) {
 
                 {/* Events starting at this hour */}
                 {eventsAtHour.map((ev, i) => (
+                  (() => {
+                    const endTime = Number(ev.start) + Number(ev.duration || 0);
+                    const nowHour = now.getHours() + now.getMinutes() / 60;
+                    const isPastEvent = date < new Date(now.getFullYear(), now.getMonth(), now.getDate()) || (isToday && endTime <= nowHour);
+
+                    return (
                   <div
                     key={`${hour}-${ev.id}-${i}`}
-                    className="day-tracker-event"
+                    className={`day-tracker-event ${isPastEvent ? "day-tracker-event-past" : ""}`}
                     style={{
                       height: `${ev.duration * 52 - 4}px`,
                       background: ev.color + "14",
@@ -312,9 +404,11 @@ export default function DayTracker({ date, accent, onClose }) {
                     </span>
                     <span className="day-tracker-event-title">{ev.title}</span>
                     <span className="day-tracker-event-time">
-                      {formatHour(ev.start)} – {formatHour(ev.start + ev.duration)}
+                      {formatHour(ev.start)} - {formatHour(ev.start + ev.duration)}
                     </span>
                   </div>
+                    );
+                  })()
                 ))}
               </div>
             </div>

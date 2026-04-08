@@ -40,6 +40,7 @@ export function usePersistedDayTracker(date, seedEvents = []) {
     (nextEvents) => {
       try {
         localStorage.setItem(storageKey, JSON.stringify(nextEvents));
+        window.dispatchEvent(new CustomEvent("day-tracker-update", { detail: storageKey }));
       } catch {
         // Ignore write errors (e.g., storage full)
       }

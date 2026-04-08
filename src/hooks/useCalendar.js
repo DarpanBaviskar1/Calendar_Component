@@ -119,6 +119,7 @@ export function useCalendar() {
 
   // Day Tracker view — when set, shows the hourly view for this date
   const [dayTrackerDate, setDayTrackerDate] = useState(null);
+  const [dayEventsMap, setDayEventsMap] = useState({});
 
   // Derived values
   const month = viewDate.getMonth();
@@ -133,6 +134,44 @@ export function useCalendar() {
    * Falls back to theme.accent if imageAccent is not available.
    */
   const accent = theme.imageAccent || theme.accent;
+
+  const loadDayEvents = useCallback(
+    (dayList) => {
+      const next = {};
+      dayList.forEach((dayObj) => {
+        const key = fmt(dayObj.date);
+        if (!key) return;
+        try {
+          const raw = localStorage.getItem(`cal_day_tracker_${key}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            next[key] = Array.isArray(parsed) ? parsed : [];
+          } else {
+            next[key] = [];
+          }
+        } catch {
+          next[key] = [];
+        }
+      });
+      setDayEventsMap(next);
+    },
+    []
+  );
+
+  useEffect(() => {
+    loadDayEvents(days);
+  }, [days, loadDayEvents]);
+
+  useEffect(() => {
+    const handleStorage = () => loadDayEvents(days);
+    const handleDayTrackerUpdate = () => loadDayEvents(days);
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("day-tracker-update", handleDayTrackerUpdate);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("day-tracker-update", handleDayTrackerUpdate);
+    };
+  }, [days, loadDayEvents]);
 
   /**
   * Navigate months with vertical flip animation.
@@ -216,6 +255,34 @@ export function useCalendar() {
     setDayTrackerDate(date);
   }, []);
 
+  const openDayTracker = useCallback((date) => {
+    if (!date) return;
+    setDayTrackerDate(date);
+    setActiveView("Day");
+  }, []);
+
+  const handleMiniDayPick = useCallback(
+    (date) => {
+      if (!date) return;
+      if (activeView === "Day") {
+        openDayTracker(date);
+        jumpToDate(date);
+        return;
+      }
+      if (activeView === "Week") {
+        setDayTrackerDate(date);
+        jumpToDate(date);
+        return;
+      }
+      if (activeView === "Month") {
+        handleDayClick(date);
+        return;
+      }
+      jumpToDate(date);
+    },
+    [activeView, handleDayClick, jumpToDate, openDayTracker]
+  );
+
   /**
    * Close Day Tracker and return to Month view.
    */
@@ -231,6 +298,44 @@ export function useCalendar() {
     setPickingEnd(false);
     setHoverDate(null);
   }, []);
+
+  useEffect(() => {
+    const handleKey = (event) => {
+      if (event.defaultPrevented) return;
+      const target = event.target;
+      const tag = target?.tagName?.toLowerCase();
+      const isTyping =
+        tag === "input" ||
+        tag === "textarea" ||
+        tag === "select" ||
+        target?.isContentEditable;
+      if (isTyping) return;
+
+      const key = event.key.toLowerCase();
+      if (key === "t") {
+        goToToday();
+        setActiveView("Month");
+        setDayTrackerDate(null);
+      }
+      if (key === "d") {
+        setActiveView("Day");
+        setDayTrackerDate((prev) => prev || today);
+      }
+      if (key === "w") {
+        setActiveView("Week");
+        setDayTrackerDate((prev) => prev || today);
+      }
+      if (key === "m") {
+        setActiveView("Month");
+      }
+      if (key === "y") {
+        setActiveView("Year");
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [goToToday, today]);
 
   // Compute effective range for visual display (includes hover preview)
   const effectiveEnd = pickingEnd && hoverDate ? hoverDate : range.end;
@@ -264,6 +369,7 @@ export function useCalendar() {
     activeView,
     setActiveView,
     isMobile,
+    dayEventsMap,
 
     // Dynamic accent
     accent,
@@ -277,6 +383,8 @@ export function useCalendar() {
     goToToday,
     setViewMonth,
     jumpToDate,
+    openDayTracker,
+    handleMiniDayPick,
 
     // Range selection
     range,
@@ -293,6 +401,7 @@ export function useCalendar() {
     // Day Tracker
     dayTrackerDate,
     closeDayTracker,
+    setDayTrackerDate,
 
     // Animation
     flipping,

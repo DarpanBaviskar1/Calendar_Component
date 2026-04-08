@@ -62,6 +62,8 @@ export default function EditorialCalendar() {
           rangeS={cal.rangeS}
           rangeE={cal.rangeE}
           accent={accent}
+          dayEventsMap={cal.dayEventsMap}
+          onOpenDay={cal.openDayTracker}
           onDayClick={cal.handleDayClick}
           onDayDoubleClick={cal.handleDayDoubleClick}
           setHoverDate={cal.setHoverDate}
@@ -372,7 +374,7 @@ export default function EditorialCalendar() {
           today={cal.today}
           rangeS={cal.rangeS}
           rangeE={cal.rangeE}
-          handleDayClick={cal.handleDayClick}
+          handleDayClick={cal.handleMiniDayPick}
           activeView={cal.activeView}
           setActiveView={cal.setActiveView}
           changeMonth={cal.changeMonth}

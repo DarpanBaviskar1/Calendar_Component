@@ -20,11 +20,14 @@ import { useState, memo } from "react";
 const DayCell = memo(function DayCell({
   dayObj,
   isToday,
+  isPast,
   isStart,
   isEnd,
   isInRange,
   accent,
   holiday,
+  events,
+  onOpenDay,
   onMouseEnter,
   onMouseLeave,
   onClick,
@@ -35,11 +38,14 @@ const DayCell = memo(function DayCell({
   const isWeekend = date.getDay() === 0 || date.getDay() === 6;
   const isSelected = isStart || isEnd;
   const dayNum = date.getDate();
+  const now = new Date();
+  const isSameDayAsNow = date.toDateString() === now.toDateString();
 
   const classNames = [
     "day-cell",
     curr ? "day-curr" : "day-other",
     isWeekend && curr ? "day-weekend" : "",
+    isPast && curr ? "day-past" : "",
     isSelected ? "day-selected" : "",
     isStart ? "day-start" : "",
     isEnd ? "day-end" : "",
@@ -76,6 +82,43 @@ const DayCell = memo(function DayCell({
 
       {/* Date number */}
       <span className="day-number">{dayNum}</span>
+
+      {/* Event chips */}
+      {curr && events?.length > 0 && (
+        <div className="day-event-chips">
+          {events.slice(0, 2).map((ev) => {
+            const endTime = Number(ev.start) + Number(ev.duration || 0);
+            const nowHours = now.getHours() + now.getMinutes() / 60;
+            const isPastEvent = isPast || (isSameDayAsNow && endTime <= nowHours);
+
+            return (
+              <div
+                key={ev.id}
+                className={`day-event-chip ${isPastEvent ? "day-event-past" : ""}`}
+                style={{
+                  borderColor: ev.color,
+                  background: ev.color + "18",
+                  color: ev.color,
+                }}
+                title={ev.title}
+              >
+                <span className="day-event-chip-title">{ev.title}</span>
+              </div>
+            );
+          })}
+          {events.length > 2 && (
+            <button
+              className="day-event-more"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenDay && onOpenDay(date);
+              }}
+            >
+              +{events.length - 2} more
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Holiday amber dot */}
       {holiday && curr && !isSelected && (

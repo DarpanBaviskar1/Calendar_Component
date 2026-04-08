@@ -16,6 +16,8 @@ export default function CalendarGrid({
   rangeS,
   rangeE,
   accent,
+  dayEventsMap,
+  onOpenDay,
   onDayClick,
   onDayDoubleClick,
   setHoverDate,
@@ -49,11 +51,14 @@ export default function CalendarGrid({
               key={dk || i}
               dayObj={dayObj}
               isToday={sameDay(dayObj.date, today)}
+              isPast={dayObj.date < new Date(today.getFullYear(), today.getMonth(), today.getDate())}
               isStart={isStart}
               isEnd={isEnd}
               isInRange={isIn}
               accent={accent}
               holiday={HOLIDAYS[dk]}
+              events={dayEventsMap?.[dk] || []}
+              onOpenDay={onOpenDay}
               onMouseEnter={setHoverDate}
               onMouseLeave={() => setHoverDate(null)}
               onClick={onDayClick}

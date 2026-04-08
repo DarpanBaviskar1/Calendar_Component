@@ -383,11 +383,12 @@ button {
 
 .day-cell {
   position: relative;
-  height: 50px;
+  min-height: 72px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 6px 6px;
   cursor: pointer;
   border-radius: var(--radius-sm);
   transition: all 0.2s var(--transition-smooth);
@@ -395,7 +396,7 @@ button {
 }
 
 .day-cell:hover {
-  background: var(--surface-dim);
+  background: transparent;
 }
 
 .day-cell:active {
@@ -415,6 +416,49 @@ button {
   transition: color 0.15s;
 }
 
+.day-past .day-number {
+  opacity: 0.6;
+}
+
+.day-event-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.day-event-chip {
+  border: 1px solid;
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-event-chip-title {
+  display: block;
+}
+
+.day-event-more {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 9px;
+  text-align: left;
+  padding: 0 2px;
+  cursor: pointer;
+}
+
+.day-event-past {
+  opacity: 0.55;
+}
+
 .day-curr .day-number { color: var(--text-primary); }
 .day-other .day-number { color: var(--text-faint); }
 .day-weekend .day-number { color: var(--text-muted); }
@@ -424,29 +468,24 @@ button {
 .day-today .day-number { font-weight: 700; }
 
 .day-today-ring {
-  position: absolute;
-  inset: 5px;
-  border-radius: 50%;
-  border: 2px solid;
-  pointer-events: none;
-  animation: todayPulse 3s ease-in-out infinite;
+  display: none;
 }
 
 /* Selected (start or end) */
-.day-selected { border-radius: 50%; }
+.day-selected { border-radius: var(--radius-sm); }
 .day-selected:hover { background: transparent; }
 .day-selected .day-number { color: white; font-weight: 700; z-index: 3; }
 
 .day-selected-bg {
   position: absolute;
-  inset: 3px;
-  border-radius: 50%;
+  inset: 0;
+  border-radius: var(--radius-sm);
   z-index: 1;
-  transition: transform 0.2s var(--transition-spring);
+  transition: none;
 }
 
 .day-selected:hover .day-selected-bg {
-  transform: scale(1.06);
+  transform: none;
 }
 
 /* In range */
@@ -597,6 +636,7 @@ button {
   border-left: 2px solid var(--border);
   margin-left: 56px;
   padding-left: 20px;
+  position: relative;
 }
 
 .day-tracker-row {
@@ -638,6 +678,38 @@ button {
   padding: 8px 12px;
   margin-bottom: 4px;
   transition: transform 0.2s var(--transition-smooth);
+}
+
+.day-tracker-event-past {
+  opacity: 0.55;
+}
+
+.day-tracker-now-line {
+  position: absolute;
+  left: -22px;
+  right: 0;
+  height: 1px;
+  border-top: 2px solid;
+  z-index: 2;
+}
+
+.day-tracker-now-dot {
+  position: absolute;
+  left: -6px;
+  top: -5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.day-tracker-ghost {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border: 2px dashed;
+  border-radius: 10px;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .day-tracker-input {
