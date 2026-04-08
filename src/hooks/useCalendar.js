@@ -80,6 +80,21 @@ export function useCalendar() {
     return "autumn";
   }, []);
 
+  const getSeasonIntensity = useCallback((monthIndex) => {
+    const season = getSeason(monthIndex);
+    const seasonMonths = {
+      winter: [9, 10, 11, 0, 1],
+      summer: [2, 3, 4],
+      monsoon: [5, 6, 7, 8],
+      autumn: [8],
+    };
+    const list = seasonMonths[season] || [monthIndex];
+    const idx = list.indexOf(monthIndex);
+    if (list.length <= 1 || idx === -1) return 1;
+    const t = idx / (list.length - 1);
+    return 1 - Math.abs(0.5 - t) / 0.5;
+  }, [getSeason]);
+
   // View state
   const [viewDate, setViewDate] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
@@ -135,6 +150,7 @@ export function useCalendar() {
   const days = useMemo(() => getCalDays(year, month), [year, month]);
   const monthName = theme.name;
   const season = getSeason(month);
+  const seasonIntensity = getSeasonIntensity(month);
 
   /**
    * Dynamic accent from image-based theming.
@@ -145,7 +161,8 @@ export function useCalendar() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-season", season);
-  }, [season]);
+    document.documentElement.style.setProperty("--season-intensity", seasonIntensity.toFixed(2));
+  }, [season, seasonIntensity]);
 
   const loadDayEvents = useCallback(
     (dayList) => {

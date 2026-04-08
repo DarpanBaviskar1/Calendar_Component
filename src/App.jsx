@@ -9,6 +9,7 @@ import Sidebar from "./components/Sidebar";
 import MobileNav from "./components/MobileNav";
 import BottomSheet from "./components/BottomSheet";
 import RainLayer from "./components/RainLayer";
+import SunLayer from "./components/SunLayer";
 import { HOLIDAYS } from "./data/holidays";
 import "./App.css";
 
@@ -230,6 +231,7 @@ export default function EditorialCalendar() {
     return (
       <div className="app-mobile">
         {cal.season === "monsoon" && <RainLayer />}
+        {cal.season === "summer" && <SunLayer />}
         {/* Spiral binding */}
         <div className="spiral-wrapper">
           <SpiralBinding />
@@ -332,6 +334,7 @@ export default function EditorialCalendar() {
   return (
     <div className="app-desktop">
       {cal.season === "monsoon" && <RainLayer />}
+      {cal.season === "summer" && <SunLayer />}
       {/* Top bar */}
       <header className="top-bar">
         <div className="top-bar-left">
