@@ -99,7 +99,7 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
       </div>
 
       {/* Range tab without range selected */}
-      {notes.tab === "range" && !notes.rangeKey ? (
+      {notes.tab === "range" && !notes.activeRangeKey ? (
         <div className="notes-empty-range">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="1.5" strokeLinecap="round" style={{ margin: "0 auto 10px", display: "block" }}>
             <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -114,6 +114,11 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
         </div>
       ) : (
         <>
+          {notes.tab === "range" && !notes.hasSelectedRange && (
+            <div className="notes-range-last">
+              Showing last saved range notes. Select a new range to update.
+            </div>
+          )}
           {/* Free-form memo */}
           <div className="notes-memo-section">
             <label className="notes-memo-label">Quick Memo</label>

@@ -21,6 +21,13 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
   const [memo, setMemo] = useState("");
   const [filter, setFilter] = useState("all"); // "all" | "active" | "completed"
   const [saved, setSaved] = useState(false);
+  const [lastRangeKey, setLastRangeKey] = useState(() => {
+    try {
+      return localStorage.getItem("cal_notes_last_range_key") || null;
+    } catch {
+      return null;
+    }
+  });
 
   // Compute storage keys
   const fmt = (d) =>
@@ -33,12 +40,24 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
       ? `${fmt(selectedRange.start)}_${fmt(selectedRange.end)}`
       : null;
 
+  useEffect(() => {
+    if (!rangeKey) return;
+    setLastRangeKey(rangeKey);
+    try {
+      localStorage.setItem("cal_notes_last_range_key", rangeKey);
+    } catch {
+      // Ignore write errors
+    }
+  }, [rangeKey]);
+
   const monthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
+
+  const activeRangeKey = rangeKey || lastRangeKey;
 
   const storageKey =
     tab === "monthly"
       ? `cal_notes_monthly_${monthKey}`
-      : `cal_notes_range_${rangeKey || "none"}`;
+      : `cal_notes_range_${activeRangeKey || "none"}`;
 
   // Load from localStorage when key changes
   useEffect(() => {
@@ -153,6 +172,7 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     tab,
     setTab,
     rangeKey,
+    activeRangeKey,
     monthKey,
 
     // Input
@@ -179,5 +199,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     // UI
     saved,
     dayCount,
+    hasSelectedRange: Boolean(rangeKey),
   };
 }

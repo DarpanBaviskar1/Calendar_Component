@@ -63,7 +63,7 @@ export function getCalDays(year, month) {
  * Manages:
  * - Current view month/year
  * - Date range selection (start, end, hover preview)
- * - Vertical page-flip animation state (bottom-to-top)
+ * - Vertical page-flip animation state (top-edge pivot)
  * - Day Tracker view (expanded hourly view for a specific date)
  * - Dark mode toggle with localStorage persistence
  * - Responsive breakpoint detection
@@ -111,7 +111,7 @@ export function useCalendar() {
   const [hoverDate, setHoverDate] = useState(null);
   const [pickingEnd, setPickingEnd] = useState(false);
 
-  // Vertical page-flip animation (bottom-to-top)
+  // Vertical page-flip animation (top-edge pivot)
   const [flipping, setFlipping] = useState(false);
 
   // Mobile notes sheet
@@ -135,7 +135,7 @@ export function useCalendar() {
   const accent = theme.imageAccent || theme.accent;
 
   /**
-   * Navigate months with vertical bottom-to-top flip animation.
+  * Navigate months with vertical flip animation.
    * Prevents double-clicks during animation.
    *
    * Animation logic:
@@ -158,6 +158,24 @@ export function useCalendar() {
     },
     [flipping]
   );
+
+  /**
+   * Jump to a specific month (0-11) within the current year.
+   */
+  const setViewMonth = useCallback(
+    (monthIndex) => {
+      setViewDate((d) => new Date(d.getFullYear(), monthIndex, 1));
+    },
+    []
+  );
+
+  /**
+   * Jump to a specific date, preserving the day context.
+   */
+  const jumpToDate = useCallback((date) => {
+    if (!date) return;
+    setViewDate(new Date(date.getFullYear(), date.getMonth(), 1));
+  }, []);
 
   /**
    * Jump to today's month.
@@ -257,6 +275,8 @@ export function useCalendar() {
     // Navigation
     changeMonth,
     goToToday,
+    setViewMonth,
+    jumpToDate,
 
     // Range selection
     range,

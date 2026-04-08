@@ -1,4 +1,5 @@
-import { useCalendar, fmtShort } from "./hooks/useCalendar";
+import { useMemo } from "react";
+import { useCalendar, fmtShort, fmt } from "./hooks/useCalendar";
 import SpiralBinding from "./components/SpiralBinding";
 import Hero from "./components/Hero";
 import CalendarGrid from "./components/CalendarGrid";
@@ -7,6 +8,7 @@ import NotesPanel from "./components/NotesPanel";
 import Sidebar from "./components/Sidebar";
 import MobileNav from "./components/MobileNav";
 import BottomSheet from "./components/BottomSheet";
+import { HOLIDAYS } from "./data/holidays";
 import "./App.css";
 
 /**
@@ -17,7 +19,7 @@ import "./App.css";
  * - Mobile: Vertical stack + FAB + bottom sheet
  * - Dark mode toggle
  * - Day Tracker view (double-click a date)
- * - Vertical bottom-to-top page flip animation
+ * - Vertical top-edge page flip animation
  * - Dynamic image-based accent theming
  *
  * All emojis stripped, replaced with clean SVG icons.
@@ -25,6 +27,158 @@ import "./App.css";
 export default function EditorialCalendar() {
   const cal = useCalendar();
   const accent = cal.accent;
+  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const weekDates = useMemo(() => {
+    const base = cal.dayTrackerDate || cal.today;
+    const start = new Date(base);
+    start.setDate(start.getDate() - start.getDay());
+    return Array.from({ length: 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
+  }, [cal.dayTrackerDate, cal.today]);
+
+  const eventsThisMonth = useMemo(() => {
+    return Object.entries(HOLIDAYS)
+      .filter(([dateStr]) => {
+        const [y, m] = dateStr.split("-").map(Number);
+        return y === cal.year && m === cal.month + 1;
+      })
+      .sort(([a], [b]) => a.localeCompare(b));
+  }, [cal.year, cal.month]);
+
+  const renderMonthView = () => (
+    cal.dayTrackerDate ? (
+      <div className="view-transition view-enter">
+        <DayTracker
+          date={cal.dayTrackerDate}
+          accent={accent}
+          onClose={cal.closeDayTracker}
+        />
+      </div>
+    ) : (
+      <div className="view-transition view-enter">
+        <CalendarGrid
+          days={cal.days}
+          today={cal.today}
+          rangeS={cal.rangeS}
+          rangeE={cal.rangeE}
+          accent={accent}
+          onDayClick={cal.handleDayClick}
+          onDayDoubleClick={cal.handleDayDoubleClick}
+          setHoverDate={cal.setHoverDate}
+        />
+      </div>
+    )
+  );
+
+  const renderAltView = (viewKey) => {
+    switch (viewKey) {
+      case "Day":
+        return (
+          <div className="view-transition view-enter">
+            <DayTracker
+              date={cal.dayTrackerDate || cal.today}
+              accent={accent}
+              onClose={() => {
+                cal.closeDayTracker();
+                cal.setActiveView("Month");
+              }}
+            />
+          </div>
+        );
+      case "Week":
+        return (
+          <div className="alt-view week-view">
+            <div className="alt-view-header">
+              <div>
+                <h3>Week Snapshot</h3>
+                <p>{fmtShort(weekDates[0])} — {fmtShort(weekDates[6])}</p>
+              </div>
+              <button className="alt-view-action" onClick={() => cal.setActiveView("Month")}>
+                Back to Month
+              </button>
+            </div>
+            <div className="week-grid">
+              {weekDates.map((d) => {
+                const key = fmt(d);
+                const holiday = HOLIDAYS[key];
+                const isToday = fmt(cal.today) === key;
+                return (
+                  <div key={key} className={`week-card ${isToday ? "week-card-today" : ""}`}>
+                    <span className="week-card-day">{d.toLocaleDateString("en-US", { weekday: "short" })}</span>
+                    <span className="week-card-date">{d.getDate()}</span>
+                    {holiday && <span className="week-card-holiday">{holiday}</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      case "Year":
+        return (
+          <div className="alt-view year-view">
+            <div className="alt-view-header">
+              <div>
+                <h3>{cal.year} Overview</h3>
+                <p>Select a month to jump in</p>
+              </div>
+              <button className="alt-view-action" onClick={() => cal.setActiveView("Month")}>
+                Back to Month
+              </button>
+            </div>
+            <div className="year-grid">
+              {monthLabels.map((label, index) => (
+                <button
+                  key={label}
+                  className={`year-card ${index === cal.month ? "year-card-active" : ""}`}
+                  onClick={() => {
+                    cal.setViewMonth(index);
+                    cal.setActiveView("Month");
+                  }}
+                >
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      case "Events":
+        return (
+          <div className="alt-view events-view">
+            <div className="alt-view-header">
+              <div>
+                <h3>Events</h3>
+                <p>{cal.monthName} {cal.year}</p>
+              </div>
+              <button className="alt-view-action" onClick={() => cal.setActiveView("Month")}>
+                Back to Month
+              </button>
+            </div>
+            <div className="events-list">
+              {eventsThisMonth.length === 0 && (
+                <div className="events-empty">No holidays in this month.</div>
+              )}
+              {eventsThisMonth.map(([dateStr, name]) => (
+                <button
+                  key={dateStr}
+                  className="events-item"
+                  onClick={() => {
+                    const [y, m, d] = dateStr.split("-").map(Number);
+                    cal.jumpToDate(new Date(y, m - 1, d));
+                    cal.setActiveView("Month");
+                  }}
+                >
+                  <span className="events-date">{dateStr}</span>
+                  <span className="events-name">{name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      case "Month":
+      default:
+        return renderMonthView();
+    }
+  };
 
   // ──────────────────────────────────────────────────────────────
   // SVG Icon Factory (shared between desktop & mobile)
@@ -77,7 +231,7 @@ export default function EditorialCalendar() {
           <SpiralBinding />
         </div>
 
-        {/* Flip container — vertical bottom-to-top */}
+        {/* Flip container — vertical top-edge pivot */}
         <div className={`flip-container ${cal.flipping ? "flip-out" : "flip-in"}`}>
           {/* Hero */}
           <Hero
@@ -101,34 +255,13 @@ export default function EditorialCalendar() {
             </button>
           </div>
 
-          {/* Main content — Day Tracker or Calendar Grid */}
+          {/* Main content */}
           <div className="calendar-card-mobile">
-            {cal.dayTrackerDate ? (
-              <div className="view-transition view-enter">
-                <DayTracker
-                  date={cal.dayTrackerDate}
-                  accent={accent}
-                  onClose={cal.closeDayTracker}
-                />
-              </div>
-            ) : (
-              <div className="view-transition view-enter">
-                <CalendarGrid
-                  days={cal.days}
-                  today={cal.today}
-                  rangeS={cal.rangeS}
-                  rangeE={cal.rangeE}
-                  accent={accent}
-                  onDayClick={cal.handleDayClick}
-                  onDayDoubleClick={cal.handleDayDoubleClick}
-                  setHoverDate={cal.setHoverDate}
-                />
-              </div>
-            )}
+            {renderAltView(cal.activeView)}
           </div>
 
           {/* Range badge */}
-          {cal.range.start && cal.range.end && !cal.dayTrackerDate && (
+          {cal.range.start && cal.range.end && !cal.dayTrackerDate && cal.activeView === "Month" && (
             <div className="range-badge" style={{ borderLeft: `3px solid ${accent}` }}>
               <span className="range-badge-dates">
                 {fmtShort(cal.range.start)} → {fmtShort(cal.range.end)}
@@ -143,7 +276,7 @@ export default function EditorialCalendar() {
           )}
 
           {/* Picking end hint */}
-          {cal.pickingEnd && !cal.range.end && (
+          {cal.pickingEnd && !cal.range.end && cal.activeView === "Month" && (
             <div className="picking-hint" style={{ color: accent, background: accent + "0D" }}>
               Tap an end date to complete the range
             </div>
@@ -201,7 +334,7 @@ export default function EditorialCalendar() {
           <p className="top-bar-subtitle">The Curator · Editorial View</p>
         </div>
         <div className="top-bar-right">
-          {["Month", "Week", "Day", "Year"].map((v) => (
+          {["Month", "Week", "Day", "Year", "Events"].map((v) => (
             <button
               key={v}
               className={`top-bar-view-btn ${cal.activeView === v ? "top-bar-view-active" : ""}`}
@@ -253,7 +386,7 @@ export default function EditorialCalendar() {
               <SpiralBinding />
             </div>
 
-            {/* Flip container — vertical bottom-to-top */}
+            {/* Flip container — vertical top-edge pivot */}
             <div className={`flip-container ${cal.flipping ? "flip-out" : "flip-in"}`}>
               {/* Hero */}
               <Hero
@@ -277,12 +410,12 @@ export default function EditorialCalendar() {
                   </button>
                 </div>
                 <div className="controls-bar-right">
-                  {cal.pickingEnd && !cal.range.end && (
+                  {cal.activeView === "Month" && cal.pickingEnd && !cal.range.end && (
                     <span className="picking-hint-inline" style={{ color: accent }}>
                       Click an end date...
                     </span>
                   )}
-                  {cal.range.start && cal.range.end && (
+                  {cal.activeView === "Month" && cal.range.start && cal.range.end && (
                     <>
                       <span className="range-info-text">
                         {fmtShort(cal.range.start)} — {fmtShort(cal.range.end)}
@@ -301,29 +434,8 @@ export default function EditorialCalendar() {
                 </div>
               </div>
 
-              {/* Main content — Day Tracker or Calendar Grid */}
-              {cal.dayTrackerDate ? (
-                <div className="view-transition view-enter">
-                  <DayTracker
-                    date={cal.dayTrackerDate}
-                    accent={accent}
-                    onClose={cal.closeDayTracker}
-                  />
-                </div>
-              ) : (
-                <div className="view-transition view-enter">
-                  <CalendarGrid
-                    days={cal.days}
-                    today={cal.today}
-                    rangeS={cal.rangeS}
-                    rangeE={cal.rangeE}
-                    accent={accent}
-                    onDayClick={cal.handleDayClick}
-                    onDayDoubleClick={cal.handleDayDoubleClick}
-                    setHoverDate={cal.setHoverDate}
-                  />
-                </div>
-              )}
+              {/* Main content */}
+              {renderAltView(cal.activeView)}
             </div>
           </div>
         </main>
