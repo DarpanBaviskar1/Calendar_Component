@@ -1,0 +1,99 @@
+import { useState, memo } from "react";
+
+/**
+ * DayCell — Individual calendar day cell with rich visual states.
+ *
+ * Visual states:
+ * - Default: subtle text, transparent background
+ * - Today: accent-colored ring outline
+ * - Start date: filled accent circle
+ * - End date: filled accent circle
+ * - In-range: tinted accent band
+ * - Weekend: muted text color
+ * - Other month: very faded text
+ * - Holiday: amber dot indicator + tooltip on hover
+ *
+ * Double-click: Opens the Day Tracker view for this date.
+ *
+ * All emojis replaced with clean SVG icons.
+ */
+const DayCell = memo(function DayCell({
+  dayObj,
+  isToday,
+  isStart,
+  isEnd,
+  isInRange,
+  accent,
+  holiday,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+  onDoubleClick,
+}) {
+  const [showTip, setShowTip] = useState(false);
+  const { date, curr } = dayObj;
+  const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+  const isSelected = isStart || isEnd;
+  const dayNum = date.getDate();
+
+  const classNames = [
+    "day-cell",
+    curr ? "day-curr" : "day-other",
+    isWeekend && curr ? "day-weekend" : "",
+    isSelected ? "day-selected" : "",
+    isStart ? "day-start" : "",
+    isEnd ? "day-end" : "",
+    isInRange ? "day-in-range" : "",
+    isToday && !isSelected ? "day-today" : "",
+    holiday && curr ? "day-holiday" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <div
+      className={classNames}
+      style={{
+        "--accent": accent,
+        "--accent-bg": accent + "25",
+      }}
+      onClick={() => curr && onClick(date)}
+      onDoubleClick={() => curr && onDoubleClick && onDoubleClick(date)}
+      onMouseEnter={() => {
+        curr && onMouseEnter(date);
+        setShowTip(true);
+      }}
+      onMouseLeave={() => {
+        onMouseLeave();
+        setShowTip(false);
+      }}
+    >
+      {/* Today ring indicator */}
+      {isToday && !isSelected && <div className="day-today-ring" style={{ borderColor: accent }} />}
+
+      {/* Selected fill circle */}
+      {isSelected && <div className="day-selected-bg" style={{ background: accent }} />}
+
+      {/* Date number */}
+      <span className="day-number">{dayNum}</span>
+
+      {/* Holiday amber dot */}
+      {holiday && curr && !isSelected && (
+        <div className="day-holiday-dot" />
+      )}
+
+      {/* Holiday tooltip — SVG star icon replaces 🎉 emoji */}
+      {holiday && showTip && curr && (
+        <div className="day-tooltip">
+          <svg className="day-tooltip-icon" width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="none">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+          </svg>
+          {holiday}
+          <div className="day-tooltip-arrow" />
+        </div>
+      )}
+    </div>
+  );
+});
+
+export default DayCell;
