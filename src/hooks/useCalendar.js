@@ -73,6 +73,13 @@ export function getCalDays(year, month) {
 export function useCalendar() {
   const today = useMemo(() => new Date(), []);
 
+  const getSeason = useCallback((monthIndex) => {
+    if ([9, 10, 11, 0, 1].includes(monthIndex)) return "winter";
+    if ([2, 3, 4].includes(monthIndex)) return "summer";
+    if ([5, 6, 7, 8].includes(monthIndex)) return "monsoon";
+    return "autumn";
+  }, []);
+
   // View state
   const [viewDate, setViewDate] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
@@ -127,6 +134,7 @@ export function useCalendar() {
   const theme = MONTH_THEMES[month];
   const days = useMemo(() => getCalDays(year, month), [year, month]);
   const monthName = theme.name;
+  const season = getSeason(month);
 
   /**
    * Dynamic accent from image-based theming.
@@ -134,6 +142,10 @@ export function useCalendar() {
    * Falls back to theme.accent if imageAccent is not available.
    */
   const accent = theme.imageAccent || theme.accent;
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-season", season);
+  }, [season]);
 
   const loadDayEvents = useCallback(
     (dayList) => {
@@ -366,6 +378,7 @@ export function useCalendar() {
     theme,
     days,
     monthName,
+    season,
     activeView,
     setActiveView,
     isMobile,

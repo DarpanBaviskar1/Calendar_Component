@@ -8,6 +8,7 @@ import NotesPanel from "./components/NotesPanel";
 import Sidebar from "./components/Sidebar";
 import MobileNav from "./components/MobileNav";
 import BottomSheet from "./components/BottomSheet";
+import RainLayer from "./components/RainLayer";
 import { HOLIDAYS } from "./data/holidays";
 import "./App.css";
 
@@ -228,6 +229,7 @@ export default function EditorialCalendar() {
   if (cal.isMobile) {
     return (
       <div className="app-mobile">
+        {cal.season === "monsoon" && <RainLayer />}
         {/* Spiral binding */}
         <div className="spiral-wrapper">
           <SpiralBinding />
@@ -329,6 +331,7 @@ export default function EditorialCalendar() {
   /* ─── DESKTOP LAYOUT ─── */
   return (
     <div className="app-desktop">
+      {cal.season === "monsoon" && <RainLayer />}
       {/* Top bar */}
       <header className="top-bar">
         <div className="top-bar-left">

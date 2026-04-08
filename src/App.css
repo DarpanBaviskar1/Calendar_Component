@@ -21,8 +21,9 @@
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
   --text-faint: #c8d3dc;
-  --border: #f1f5f9;
-  --border-subtle: #e2e8f0;
+  --border: #e5e9ef;
+  --border-subtle: #d6dde6;
+  --border-strong: #b9c4d2;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 2px 12px rgba(0, 0, 0, 0.09);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
@@ -50,6 +51,7 @@ html {
   --text-faint: #475569;
   --border: #334155;
   --border-subtle: #2d3a4a;
+  --border-strong: #4b5a6e;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 2px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
@@ -61,6 +63,44 @@ html {
 
 [data-theme="dark"] .hero-mountains polygon {
   fill: var(--surface);
+}
+
+/* Seasonal background tint */
+[data-season="summer"] body {
+  --season-bg: linear-gradient(180deg, rgba(255, 244, 214, 0.85) 0%, rgba(249, 236, 194, 0.6) 40%, var(--bg) 100%);
+  --season-overlay: radial-gradient(circle at 12% 18%, rgba(255, 216, 120, 0.3) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 22%, rgba(255, 216, 120, 0.25) 0 2px, transparent 3px);
+  --sun-overlay: radial-gradient(circle at 80% 20%, rgba(255, 215, 130, 0.45), rgba(255, 215, 130, 0) 55%),
+    conic-gradient(from 0deg at 80% 20%, rgba(255, 205, 120, 0.18), rgba(255, 205, 120, 0) 20%, rgba(255, 205, 120, 0.18) 40%, rgba(255, 205, 120, 0) 60%, rgba(255, 205, 120, 0.18) 80%, rgba(255, 205, 120, 0));
+}
+
+[data-season="monsoon"] body {
+  --season-bg: linear-gradient(180deg, #05070c 0%, #0a0f1a 60%, var(--bg) 100%);
+  --season-overlay: none;
+}
+
+[data-season="winter"] body {
+  --season-bg: linear-gradient(180deg, rgba(206, 224, 244, 0.9) 0%, rgba(180, 204, 230, 0.7) 45%, var(--bg) 100%);
+  --season-overlay: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.7) 0 2px, transparent 3px),
+    radial-gradient(circle at 40% 30%, rgba(255, 255, 255, 0.6) 0 2px, transparent 3px),
+    radial-gradient(circle at 75% 15%, rgba(255, 255, 255, 0.6) 0 2px, transparent 3px);
+  --winter-snow-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0AgMAAAC2uDcZAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAMUExURQAAAP///////////zjAO6gAAAAEdFJOUwAuxHKQ3Q8qAAADW0lEQVR42u3dP26jQByGYUbaEe0Wi+jgKj5CirjFp9gGKXAfkOUmW+YOW2QvgdtN45XlHMAgB2aYz955nzrJp2AYM39/SYJrmTLcbDfK9MtvYbod3oXp6fCqTO8iTpdeeaNNP/1VprfKJy7ZPinTLV91AAAAAAAAAAD4kkkH/XfKCQ/TSCd7Tm/K9GHv9+89KdOzrTK9PM/68dpverXfzPnxxu9d1/Sz0ncfXtPreenZszLd+G1pq17Zchfz/nfPyoMyPT0r0802AQDMYZWt9uS7R5jWfOK9y7wEuSYT75z2EuQNph5/QU67IItrJ14S0+5dmv4aQfpBmT7RLUuHIGMO+XiXNNCCcjve1pk2TI9lIkW6lB8AAACITcxTza12qvmXMt3zdCvpX//clelJ/SZ93j+U6bl0J6+VtrQAAAAAAADwxz4r03PpGNtOOr7YLN2D8MNHer1w/4WfA00Xp3tZ8bk03R59DMo2C9PTzscUUHFYmu5j1WN+VqbbhWul/aSbhS2t5UBTFfGBppsEAAAA+Mp7qzJcW/Ik0J7QqZ7ioCy4EmhP6Kq9ZNKX3HXaEQLtwmjlEyfeE/qNrzoAc1+SmPQTaaQHj9U96RqVNF172F4uPe7OSlsbI21pAQAAAPyPjHSlWibt5WgPami0R2QwnhRleqMtn7BXpudn5ROnHTtPOJgFAIA7c58VQgL1wpT7xHxXpZvZ+a73MadH3Adc83+/OaRTrXnP39wrW6456nJzycCqvbCb1QFXHW0rxEtF3NbTun0whWNNJbfKiq7pblUlXa+8232TH9zuabdrZx2XCLmlu1bEdLxvvkvTXVvqXrrj5aJsK81P6fs+S8sAAAAAAAAAAAAAPJKYS3430pP3B0p+R5lOyW8VSn4DAAAAANbt80t3EljpLoqAO0hGLnPA3TMjGzoD7hwa2dAZMH1kY17A9KK/GlrJA6ZfR6XSdHtRpps22DhXOfJwh6sXkx6VA3pWeua7kRZAw0OSlnIK2CyNpf9TTj1oC5xri6dZ8TRrxOknadG8Vnpc0k7a48uULS0AAHhQDFiL5L2yn6o96irm9LzTFraXph/d0t1Oi3QdGcr+OP2646hYKa3VUEmrozRRV0eRfk/EXG1Xes8z7wMAAHAHPgHhchfsTyUPMgAAAABJRU5ErkJggg==");
+}
+
+[data-season="autumn"] body {
+  --season-bg: linear-gradient(180deg, rgba(255, 236, 217, 0.9) 0%, rgba(242, 223, 201, 0.7) 45%, var(--bg) 100%);
+  --season-overlay: radial-gradient(circle at 20% 20%, rgba(214, 124, 65, 0.18) 0 2px, transparent 3px),
+    radial-gradient(circle at 60% 30%, rgba(214, 124, 65, 0.14) 0 2px, transparent 3px);
+  --sun-overlay: radial-gradient(circle at 75% 18%, rgba(255, 190, 120, 0.35), rgba(255, 190, 120, 0) 60%),
+    conic-gradient(from 10deg at 75% 18%, rgba(255, 170, 90, 0.15), rgba(255, 170, 90, 0) 25%, rgba(255, 170, 90, 0.15) 50%, rgba(255, 170, 90, 0) 75%, rgba(255, 170, 90, 0.15) 100%);
+}
+
+[data-theme="dark"][data-season="summer"] body,
+[data-theme="dark"][data-season="monsoon"] body,
+[data-theme="dark"][data-season="winter"] body,
+[data-theme="dark"][data-season="autumn"] body {
+  --season-bg: linear-gradient(180deg, rgba(10, 16, 30, 0.95) 0%, rgba(15, 23, 42, 0.85) 45%, var(--bg) 100%);
+  --season-overlay: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.05) 0 2px, transparent 3px);
 }
 
 /* ─── Reset & Base ───────────────────────────────────────────── */
@@ -75,11 +115,179 @@ html {
 body {
   font-family: var(--font-body);
   background: var(--bg);
+  background-image: var(--season-bg);
+  position: relative;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background 0.35s var(--transition-smooth), color 0.35s var(--transition-smooth);
 }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--season-overlay);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
+}
+
+[data-season="summer"] body::after,
+[data-season="autumn"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--sun-overlay);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: -1;
+  animation: sunPulse 10s ease-in-out infinite;
+}
+
+.app-desktop,
+.app-mobile {
+  position: relative;
+  z-index: 1;
+}
+
+.rain-layer {
+  position: fixed;
+  inset: 0;
+  width: 120vw;
+  height: 100vh;
+  left: -10vw;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+
+.rain-layer::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 45% 0%, rgba(255, 255, 255, 0.08), transparent 45%),
+    radial-gradient(circle at 70% -10%, rgba(255, 255, 255, 0.06), transparent 50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.rain-lightning::after {
+  opacity: 1;
+  animation: lightningFlash 0.3s linear 0s 2;
+}
+
+.rain-drop {
+  position: absolute;
+  top: -25vh;
+  left: var(--left);
+  width: var(--thickness);
+  height: 120px;
+  opacity: calc(var(--opacity) * 0.7);
+  transform: translateY(0);
+  animation: rainDrop var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.rain-stem {
+  display: block;
+  width: 100%;
+  height: 70%;
+  background: linear-gradient(to bottom, rgba(180, 210, 245, 0), rgba(180, 210, 245, 0.55));
+}
+
+.rain-splat {
+  display: block;
+  width: 12px;
+  height: 8px;
+  margin-left: -4px;
+  border-top: 2px dotted rgba(210, 230, 255, 0.6);
+  border-radius: 50%;
+  opacity: 0.5;
+  transform: scale(0);
+  animation: rainSplat var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+
+@keyframes rainDrop {
+  0% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(100vh);
+  }
+  100% {
+    transform: translateY(115vh);
+  }
+}
+
+@keyframes rainSplat {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  85% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes lightningFlash {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+[data-season="winter"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--winter-snow-image);
+  background-repeat: repeat;
+  background-size: 450px auto;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
+  animation: snowing 20s linear infinite;
+}
+
+
+@keyframes snowing {
+  from { background-position-y: 0px; }
+  to { background-position-y: 900px; }
+}
+
+@keyframes sunPulse {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+
 
 button {
   font-family: var(--font-body);
@@ -340,6 +548,7 @@ button {
 
 .calendar-grid-container {
   background: var(--surface);
+  border-top: 2px solid var(--border-strong);
   transition: background 0.35s var(--transition-smooth);
 }
 
@@ -555,6 +764,7 @@ button {
 
 .day-tracker {
   background: var(--surface);
+  border: 2px solid var(--border-strong);
   padding: 24px;
   transition: background 0.35s var(--transition-smooth);
 }
@@ -717,7 +927,7 @@ button {
   padding: 12px 14px;
   border-radius: var(--radius-md);
   background: var(--surface-dim);
-  border: 1px solid var(--border-subtle);
+  border: 2px solid var(--border-strong);
 }
 
 .day-tracker-input-row {
@@ -757,7 +967,7 @@ button {
 .day-tracker-edit-duration {
   padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid var(--border-subtle);
+  border: 2px solid var(--border-strong);
   background: var(--surface);
   color: var(--text-primary);
   font-size: 12px;
@@ -786,7 +996,7 @@ button {
 .day-tracker-edit-color {
   width: 36px;
   height: 36px;
-  border: 1px solid var(--border-subtle);
+  border: 2px solid var(--border-strong);
   border-radius: 10px;
   padding: 0;
   background: var(--surface);
@@ -820,7 +1030,7 @@ button {
   padding: 10px 12px;
   border-radius: var(--radius-md);
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border-strong);
 }
 
 .dt-span-1 { grid-column: span 1; }
@@ -833,7 +1043,7 @@ button {
 }
 
 .day-tracker-note {
-  border: 1px solid var(--border-subtle);
+  border: 2px solid var(--border-strong);
   background: var(--surface-dim);
   border-radius: var(--radius-md);
   padding: 12px 14px;
@@ -858,7 +1068,7 @@ button {
 .day-tracker-note-textarea {
   width: 100%;
   border-radius: 10px;
-  border: 1px solid var(--border-subtle);
+  border: 2px solid var(--border-strong);
   background: var(--surface);
   color: var(--text-primary);
   padding: 10px 12px;
@@ -934,7 +1144,7 @@ button {
   border-radius: var(--radius-lg);
   padding: 22px;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border-strong);
   transition: all 0.35s var(--transition-smooth);
 }
 
@@ -1091,7 +1301,7 @@ button {
 .notes-memo-textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 1.5px solid var(--border-subtle);
+  border: 2px solid var(--border-strong);
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-family: var(--font-body);
@@ -1244,7 +1454,7 @@ button {
 .notes-input {
   flex: 1;
   padding: 9px 12px;
-  border: 1.5px solid var(--border-subtle);
+  border: 2px solid var(--border-strong);
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-family: var(--font-body);
@@ -1290,6 +1500,7 @@ button {
   border-radius: var(--radius-lg);
   padding: 18px;
   box-shadow: var(--shadow-sm);
+  border: 2px solid var(--border-strong);
   transition: all 0.35s var(--transition-smooth);
 }
 
@@ -1568,6 +1779,7 @@ button {
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-md);
+  border: 2px solid var(--border-strong);
   transition: all 0.35s var(--transition-smooth);
 }
 
@@ -1734,7 +1946,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border-strong);
   background: var(--surface);
   flex-wrap: wrap;
   gap: 8px;
@@ -1829,6 +2041,7 @@ button {
 
 .calendar-card-mobile {
   background: var(--surface);
+  border: 2px solid var(--border-strong);
   transition: background 0.35s var(--transition-smooth);
 }
 
@@ -1839,7 +2052,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border-strong);
   transition: all 0.35s var(--transition-smooth);
 }
 
@@ -1872,7 +2085,7 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  border-top: 1px solid var(--border);
+  border-top: 2px solid var(--border-strong);
   transition: all 0.35s var(--transition-smooth);
 }
 
@@ -1951,6 +2164,7 @@ button {
   right: 0;
   background: var(--surface-dim);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border: 2px solid var(--border-strong);
   padding: 16px;
   max-height: 75vh;
   overflow-y: auto;
