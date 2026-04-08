@@ -1,19 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 
-/**
- * usePersistedNotes — localStorage-backed smart todo/notes system.
- *
- * Provides:
- * - Todo items (add, toggle, remove, filter)
- * - Free-form memo text
- * - Auto-persistence to localStorage
- * - Tab switching (monthly vs range-specific)
- * - Save indicator flash
- *
- * @param {Object} selectedRange - { start: Date|null, end: Date|null }
- * @param {number} currentMonth - current viewed month (0-11)
- * @param {number} currentYear - current viewed year
- */
 export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
   const [tab, setTab] = useState("monthly");
   const [input, setInput] = useState("");
@@ -29,7 +15,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     }
   });
 
-  // Compute storage keys
   const fmt = (d) =>
     d
       ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
@@ -59,7 +44,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
       ? `cal_notes_monthly_${monthKey}`
       : `cal_notes_range_${activeRangeKey || "none"}`;
 
-  // Load from localStorage when key changes
   useEffect(() => {
     try {
       const saved = localStorage.getItem(storageKey);
@@ -78,9 +62,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     setInput("");
   }, [storageKey]);
 
-  /**
-   * Persist current state to localStorage and flash the save indicator.
-   */
   const persist = useCallback(
     (newTodos, newMemo) => {
       try {
@@ -97,9 +78,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     [storageKey, memo]
   );
 
-  /**
-   * Add a new todo item from the input field.
-   */
   const addTodo = useCallback(() => {
     if (!input.trim()) return;
     const newTodos = [
@@ -111,9 +89,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     setInput("");
   }, [input, todos, persist]);
 
-  /**
-   * Toggle a todo's done state.
-   */
   const toggleTodo = useCallback(
     (id) => {
       const newTodos = todos.map((t) =>
@@ -125,9 +100,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     [todos, persist]
   );
 
-  /**
-   * Remove a todo by id.
-   */
   const removeTodo = useCallback(
     (id) => {
       const newTodos = todos.filter((t) => t.id !== id);
@@ -137,9 +109,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     [todos, persist]
   );
 
-  /**
-   * Update the free-form memo text.
-   */
   const updateMemo = useCallback(
     (text) => {
       setMemo(text);
@@ -148,7 +117,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
     [todos, persist]
   );
 
-  // Filtered todos based on active filter
   const filteredTodos =
     filter === "all"
       ? todos
@@ -156,7 +124,6 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
         ? todos.filter((t) => !t.done)
         : todos.filter((t) => t.done);
 
-  // Stats
   const activeCount = todos.filter((t) => !t.done).length;
   const completedCount = todos.filter((t) => t.done).length;
 
@@ -168,35 +135,24 @@ export function usePersistedNotes(selectedRange, currentMonth, currentYear) {
       : 0;
 
   return {
-    // Tab state
     tab,
     setTab,
     rangeKey,
     activeRangeKey,
     monthKey,
-
-    // Input
     input,
     setInput,
-
-    // Todos
     todos,
     filteredTodos,
     addTodo,
     toggleTodo,
     removeTodo,
-
-    // Memo
     memo,
     updateMemo,
-
-    // Filter
     filter,
     setFilter,
     activeCount,
     completedCount,
-
-    // UI
     saved,
     dayCount,
     hasSelectedRange: Boolean(rangeKey),

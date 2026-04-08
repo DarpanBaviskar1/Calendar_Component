@@ -8,11 +8,6 @@ function formatDateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
-/**
- * usePersistedDayNote — localStorage-backed note per date.
- *
- * @param {Date} date - Selected date
- */
 export function usePersistedDayNote(date) {
   const storageKey = useMemo(() => {
     const dateKey = formatDateKey(date);
@@ -39,7 +34,6 @@ export function usePersistedDayNote(date) {
         setSaved(true);
         setTimeout(() => setSaved(false), 1200);
       } catch {
-        // Ignore write errors (e.g., storage full)
       }
     },
     [storageKey]

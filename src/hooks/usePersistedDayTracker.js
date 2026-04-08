@@ -8,12 +8,6 @@ function formatDateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
-/**
- * usePersistedDayTracker — localStorage-backed day tracking events per date.
- *
- * @param {Date} date - Selected date
- * @param {Array} seedEvents - Default events when no storage exists
- */
 export function usePersistedDayTracker(date, seedEvents = []) {
   const storageKey = useMemo(() => {
     const dateKey = formatDateKey(date);
@@ -42,7 +36,6 @@ export function usePersistedDayTracker(date, seedEvents = []) {
         localStorage.setItem(storageKey, JSON.stringify(nextEvents));
         window.dispatchEvent(new CustomEvent("day-tracker-update", { detail: storageKey }));
       } catch {
-        // Ignore write errors (e.g., storage full)
       }
     },
     [storageKey]

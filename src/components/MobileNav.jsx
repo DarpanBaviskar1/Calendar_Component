@@ -1,13 +1,3 @@
-/**
- * MobileNav — Fixed bottom navigation bar for mobile view.
- *
- * Provides app-like tab navigation with SVG icons and active state.
- * Includes safe-area-inset-bottom padding for notched devices.
- *
- * @param {string} activeView - Currently active view
- * @param {Function} setActiveView - View setter
- * @param {string} accent - Current accent color
- */
 export default function MobileNav({ activeView, setActiveView, accent }) {
   const tabs = [
     {

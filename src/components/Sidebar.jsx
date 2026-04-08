@@ -1,15 +1,5 @@
 import { getCalDays, sameDay, inRange } from "../hooks/useCalendar";
 
-/**
- * Sidebar — Desktop-only left panel.
- *
- * Simplified layout with:
- * - Mini calendar navigator
- * - View mode buttons with SVG icons (no emojis/unicode)
- * - Visual legend
- *
- * Redundant "Categories" section removed for cleaner UX.
- */
 export default function Sidebar({
   month,
   year,
@@ -28,7 +18,6 @@ export default function Sidebar({
 
   return (
     <aside className="sidebar">
-      {/* Mini calendar */}
       <div className="sidebar-card">
         <div className="sidebar-mini-header">
           <span className="sidebar-mini-title">
@@ -73,7 +62,6 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* View modes — SVG icons instead of unicode chars */}
       <div className="sidebar-card">
         {[
           {
@@ -134,7 +122,6 @@ export default function Sidebar({
         ))}
       </div>
 
-      {/* Legend */}
       <div className="sidebar-card">
         <div className="sidebar-section-title">LEGEND</div>
         <div className="sidebar-legend">

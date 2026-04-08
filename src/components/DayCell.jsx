@@ -1,22 +1,5 @@
 import { useState, memo } from "react";
 
-/**
- * DayCell — Individual calendar day cell with rich visual states.
- *
- * Visual states:
- * - Default: subtle text, transparent background
- * - Today: accent-colored ring outline
- * - Start date: filled accent circle
- * - End date: filled accent circle
- * - In-range: tinted accent band
- * - Weekend: muted text color
- * - Other month: very faded text
- * - Holiday: amber dot indicator + tooltip on hover
- *
- * Double-click: Opens the Day Tracker view for this date.
- *
- * All emojis replaced with clean SVG icons.
- */
 const DayCell = memo(function DayCell({
   dayObj,
   isToday,
@@ -74,16 +57,9 @@ const DayCell = memo(function DayCell({
         setShowTip(false);
       }}
     >
-      {/* Today ring indicator */}
       {isToday && !isSelected && <div className="day-today-ring" style={{ borderColor: accent }} />}
-
-      {/* Selected fill circle */}
       {isSelected && <div className="day-selected-bg" style={{ background: accent }} />}
-
-      {/* Date number */}
       <span className="day-number">{dayNum}</span>
-
-      {/* Event chips */}
       {curr && events?.length > 0 && (
         <div className="day-event-chips">
           {events.slice(0, 2).map((ev) => {
@@ -119,13 +95,9 @@ const DayCell = memo(function DayCell({
           )}
         </div>
       )}
-
-      {/* Holiday amber dot */}
       {holiday && curr && !isSelected && (
         <div className="day-holiday-dot" />
       )}
-
-      {/* Holiday tooltip — SVG star icon replaces 🎉 emoji */}
       {holiday && showTip && curr && (
         <div className="day-tooltip">
           <svg className="day-tooltip-icon" width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="none">

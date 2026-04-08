@@ -2312,6 +2312,18 @@ button {
 
 .mobile-nav-active span { font-weight: 700; }
 
+.signature {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+  padding: 12px 0 24px;
+}
+
+.app-mobile .signature {
+  padding-bottom: 84px;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════ */

@@ -13,19 +13,6 @@ import SunLayer from "./components/SunLayer";
 import { HOLIDAYS } from "./data/holidays";
 import "./App.css";
 
-/**
- * EditorialCalendar — Root application component.
- *
- * Orchestrates:
- * - Desktop: 3-panel (Sidebar | Calendar | Notes)
- * - Mobile: Vertical stack + FAB + bottom sheet
- * - Dark mode toggle
- * - Day Tracker view (double-click a date)
- * - Vertical top-edge page flip animation
- * - Dynamic image-based accent theming
- *
- * All emojis stripped, replaced with clean SVG icons.
- */
 export default function EditorialCalendar() {
   const cal = useCalendar();
   const accent = cal.accent;
@@ -184,9 +171,6 @@ export default function EditorialCalendar() {
     }
   };
 
-  // ──────────────────────────────────────────────────────────────
-  // SVG Icon Factory (shared between desktop & mobile)
-  // ──────────────────────────────────────────────────────────────
   const ChevronLeft = (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 18l-6-6 6-6" />
@@ -226,20 +210,15 @@ export default function EditorialCalendar() {
     </svg>
   );
 
-  /* ─── MOBILE LAYOUT ─── */
   if (cal.isMobile) {
     return (
       <div className="app-mobile">
         {cal.season === "monsoon" && <RainLayer />}
         {cal.season === "summer" && <SunLayer />}
-        {/* Spiral binding */}
         <div className="spiral-wrapper">
           <SpiralBinding />
         </div>
-
-        {/* Flip container — vertical top-edge pivot */}
         <div className={`flip-container ${cal.flipping ? "flip-out" : "flip-in"}`}>
-          {/* Hero */}
           <Hero
             theme={cal.theme}
             monthName={cal.monthName}
@@ -247,8 +226,6 @@ export default function EditorialCalendar() {
             monthIndex={cal.month}
             isMobile
           />
-
-          {/* Month navigation */}
           <div className="month-nav">
             <button className="month-nav-btn" onClick={() => cal.changeMonth(-1)}>
               {ChevronLeft}
@@ -260,13 +237,9 @@ export default function EditorialCalendar() {
               {ChevronRight}
             </button>
           </div>
-
-          {/* Main content */}
           <div className="calendar-card-mobile">
             {renderAltView(cal.activeView)}
           </div>
-
-          {/* Range badge */}
           {cal.range.start && cal.range.end && !cal.dayTrackerDate && cal.activeView === "Month" && (
             <div className="range-badge" style={{ borderLeft: `3px solid ${accent}` }}>
               <span className="range-badge-dates">
@@ -280,16 +253,12 @@ export default function EditorialCalendar() {
               </button>
             </div>
           )}
-
-          {/* Picking end hint */}
           {cal.pickingEnd && !cal.range.end && cal.activeView === "Month" && (
             <div className="picking-hint" style={{ color: accent, background: accent + "0D" }}>
               Tap an end date to complete the range
             </div>
           )}
         </div>
-
-        {/* Dark mode toggle */}
         <button
           className="dark-toggle dark-toggle-mobile"
           onClick={cal.toggleDarkMode}
@@ -297,8 +266,6 @@ export default function EditorialCalendar() {
         >
           {cal.darkMode ? SunIcon : MoonIcon}
         </button>
-
-        {/* FAB */}
         <button
           className="fab"
           onClick={() => cal.setShowNotes((v) => !v)}
@@ -309,8 +276,6 @@ export default function EditorialCalendar() {
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
         </button>
-
-        {/* Bottom sheet notes */}
         <BottomSheet
           show={cal.showNotes}
           onClose={() => cal.setShowNotes(false)}
@@ -319,8 +284,6 @@ export default function EditorialCalendar() {
           month={cal.month}
           year={cal.year}
         />
-
-        {/* Bottom navigation */}
         <MobileNav
           activeView={cal.activeView}
           setActiveView={cal.setActiveView}
@@ -329,17 +292,12 @@ export default function EditorialCalendar() {
       </div>
     );
   }
-
-  /* ─── DESKTOP LAYOUT ─── */
   return (
     <div className="app-desktop">
       {cal.season === "monsoon" && <RainLayer />}
       {cal.season === "summer" && <SunLayer />}
-      {/* Top bar */}
       <header className="top-bar">
         <div className="top-bar-left">
-          <h1 className="top-bar-title">Editorial Calendar</h1>
-          <p className="top-bar-subtitle">The Curator · Editorial View</p>
         </div>
         <div className="top-bar-right">
           {["Month", "Week", "Day", "Year", "Events"].map((v) => (
@@ -368,10 +326,7 @@ export default function EditorialCalendar() {
           </div>
         </div>
       </header>
-
-      {/* 3-panel layout */}
       <div className="desktop-layout">
-        {/* Sidebar */}
         <Sidebar
           month={cal.month}
           year={cal.year}
@@ -385,26 +340,18 @@ export default function EditorialCalendar() {
           setActiveView={cal.setActiveView}
           changeMonth={cal.changeMonth}
         />
-
-        {/* Main calendar */}
         <main className="main-calendar">
           <div className="calendar-card">
-            {/* Spiral */}
             <div className="spiral-wrapper">
               <SpiralBinding />
             </div>
-
-            {/* Flip container — vertical top-edge pivot */}
             <div className={`flip-container ${cal.flipping ? "flip-out" : "flip-in"}`}>
-              {/* Hero */}
               <Hero
                 theme={cal.theme}
                 monthName={cal.monthName}
                 year={cal.year}
                 monthIndex={cal.month}
               />
-
-              {/* Controls bar */}
               <div className="controls-bar">
                 <div className="controls-bar-left">
                   <button className="control-btn" onClick={() => cal.changeMonth(-1)}>
@@ -441,14 +388,10 @@ export default function EditorialCalendar() {
                   )}
                 </div>
               </div>
-
-              {/* Main content */}
               {renderAltView(cal.activeView)}
             </div>
           </div>
         </main>
-
-        {/* Notes panel */}
         <aside className="notes-aside">
           <NotesPanel
             selectedRange={cal.range}
@@ -458,6 +401,7 @@ export default function EditorialCalendar() {
           />
         </aside>
       </div>
+      <div className="signature">Built by Darpan Baviskar</div>
     </div>
   );
 }

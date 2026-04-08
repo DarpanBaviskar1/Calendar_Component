@@ -4,23 +4,9 @@ import { usePersistedDayTracker } from "../hooks/usePersistedDayTracker";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { usePersistedDayNote } from "../hooks/usePersistedDayNote";
 
-/**
- * DayTracker — Expanded hourly day view.
- *
- * Shows an hourly timeline from 6:00 AM to 10:00 PM when a user
- * double-clicks a date. Includes sample editorial events and a
- * "Back to Month" button for smooth reverse navigation.
- *
- * Design: editorial aesthetic with time slot gutters and colored event blocks.
- *
- * @param {Date} date - The selected date to show
- * @param {string} accent - Current accent color
- * @param {Function} onClose - Handler to return to month view
- */
-
 const DEFAULT_EVENTS = [];
 
-const HOURS = Array.from({ length: 17 }, (_, i) => i + 6); // 6 AM to 10 PM
+  const HOURS = Array.from({ length: 17 }, (_, i) => i + 6);
 
 function formatHour(h) {
   if (h === 0 || h === 24) return "12 AM";
@@ -138,7 +124,6 @@ export default function DayTracker({ date, accent, onClose }) {
 
   return (
     <div className="day-tracker" ref={revealRef}>
-      {/* Header */}
       <div className="day-tracker-header">
         <button className="day-tracker-back" onClick={onClose}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -165,7 +150,6 @@ export default function DayTracker({ date, accent, onClose }) {
         </div>
       </div>
 
-      {/* Quick add */}
       <div className="day-tracker-input reveal">
         <div className="day-tracker-input-row">
           <div className="day-tracker-field dt-span-4">
@@ -241,7 +225,6 @@ export default function DayTracker({ date, accent, onClose }) {
         <div className="day-tracker-input-hint">Times use 24h format. End time must be after start.</div>
       </div>
 
-      {/* Day note */}
       <div className="day-tracker-note reveal">
         <div className="day-tracker-note-header">
           <label className="day-tracker-label" htmlFor="dt-note">Day Note</label>
@@ -257,7 +240,6 @@ export default function DayTracker({ date, accent, onClose }) {
         />
       </div>
 
-      {/* Editable list */}
       <div className="day-tracker-edit-list reveal">
         {events.map((ev) => (
           <div key={ev.id} className="day-tracker-edit-item">
@@ -333,7 +315,6 @@ export default function DayTracker({ date, accent, onClose }) {
         ))}
       </div>
 
-      {/* Timeline */}
       <div
         className="day-tracker-timeline reveal"
         ref={timelineRef}
@@ -368,21 +349,15 @@ export default function DayTracker({ date, accent, onClose }) {
           })()
         )}
         {HOURS.map((hour) => {
-          // Find events that start at this hour
           const eventsAtHour = events.filter((e) => Math.floor(e.start) === hour);
 
           return (
             <div key={hour} className="day-tracker-row">
-              {/* Time gutter */}
               <div className="day-tracker-time">
                 <span>{formatHour(hour)}</span>
               </div>
-
-              {/* Slot area */}
               <div className="day-tracker-slot">
                 <div className="day-tracker-line" />
-
-                {/* Events starting at this hour */}
                 {eventsAtHour.map((ev, i) => (
                   (() => {
                     const endTime = Number(ev.start) + Number(ev.duration || 0);

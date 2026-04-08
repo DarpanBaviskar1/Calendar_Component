@@ -2,12 +2,6 @@ import DayCell from "./DayCell";
 import { sameDay, inRange, fmt } from "../hooks/useCalendar";
 import { HOLIDAYS } from "../data/holidays";
 
-/**
- * CalendarGrid — The month grid with day headers and 42 day cells.
- *
- * Renders the standard Sun–Sat header row and 6 weeks of DayCells.
- * Passes double-click handler down for Day Tracker activation.
- */
 const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function CalendarGrid({
@@ -24,7 +18,6 @@ export default function CalendarGrid({
 }) {
   return (
     <div className="calendar-grid-container">
-      {/* Day-of-week headers */}
       <div className="day-headers">
         {DAY_HEADERS.map((d) => (
           <div key={d} className="day-header">
@@ -32,8 +25,6 @@ export default function CalendarGrid({
           </div>
         ))}
       </div>
-
-      {/* 42-cell grid */}
       <div className="day-grid">
         {days.map((dayObj, i) => {
           const dk = fmt(dayObj.date);
@@ -67,8 +58,6 @@ export default function CalendarGrid({
           );
         })}
       </div>
-
-      {/* Double-click hint */}
       <div className="grid-hint">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <rect x="3" y="3" width="18" height="18" rx="2" />

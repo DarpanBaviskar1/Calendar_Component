@@ -1,23 +1,11 @@
 import { usePersistedNotes } from "../hooks/usePersistedNotes";
 import { fmtShort } from "../hooks/useCalendar";
 
-/**
- * NotesPanel — Enhanced smart notes & todo system.
- *
- * First-class UI element with:
- * - Tabbed interface with clean SVG icons (no emojis)
- * - Smart todo list with animated checkboxes
- * - Free-form memo textarea
- * - Filter pills: All / Active / Done
- * - Date range context bar
- * - Auto-save to localStorage with visual indicator
- */
 export default function NotesPanel({ selectedRange, accent, month, year }) {
   const notes = usePersistedNotes(selectedRange, month, year);
 
   return (
     <div className="notes-panel">
-      {/* Header */}
       <div className="notes-header">
         <div className="notes-header-left">
           <svg
@@ -47,7 +35,6 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
         </div>
       </div>
 
-      {/* Date range context bar */}
       {selectedRange.start && selectedRange.end && (
         <div
           className="notes-range-bar"
@@ -68,7 +55,6 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
         </div>
       )}
 
-      {/* Tabs — SVG icons replace emojis */}
       <div className="notes-tabs">
         <button
           className={`notes-tab ${notes.tab === "monthly" ? "notes-tab-active" : ""}`}
@@ -98,7 +84,6 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
         </button>
       </div>
 
-      {/* Range tab without range selected */}
       {notes.tab === "range" && !notes.activeRangeKey ? (
         <div className="notes-empty-range">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="1.5" strokeLinecap="round" style={{ margin: "0 auto 10px", display: "block" }}>
@@ -119,7 +104,6 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
               Showing last saved range notes. Select a new range to update.
             </div>
           )}
-          {/* Free-form memo */}
           <div className="notes-memo-section">
             <label className="notes-memo-label">Quick Memo</label>
             <textarea
@@ -136,7 +120,6 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
             />
           </div>
 
-          {/* Filter pills */}
           {notes.todos.length > 0 && (
             <div className="notes-filters">
               {[
@@ -157,7 +140,6 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
             </div>
           )}
 
-          {/* Todo list */}
           <div className="notes-todo-list">
             {notes.filteredTodos.length === 0 && notes.todos.length === 0 && (
               <div className="notes-empty-todos">
@@ -208,7 +190,6 @@ export default function NotesPanel({ selectedRange, accent, month, year }) {
             ))}
           </div>
 
-          {/* Input */}
           <div className="notes-input-row">
             <input
               className="notes-input"
